@@ -2,10 +2,6 @@
 
 This repository contains **Task-02** of my Web Development Internship with **Prodigy InfoTech**. The task involved creating a fully functional and visually appealing **Stopwatch Web App** using HTML, CSS, and JavaScript.
 
-## 🚀 Live Preview
-
-[🔗 Click here to view the live project (optional if deployed)](https://your-deployment-link.com)
-
 ---
 
 ## 📁 Repository Name Convention
@@ -43,7 +39,7 @@ This repo follows the required naming convention:
 
 ## 📸 Screenshots
 
-![Stopwatch UI](./screenshot.png) <!-- Replace with your actual screenshot path -->
+![Stopwatch UI](msedge_rgwFpilNdK.png) <!-- Replace with your actual screenshot path -->
 
 ---
 
