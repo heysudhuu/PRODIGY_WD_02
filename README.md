@@ -52,7 +52,7 @@ _Web Development Intern @ Prodigy InfoTech_
 
 ## 🔗 LinkedIn Post (Mandatory)
 
-📌 [Here's my LinkedIn post about Task-02](https://www.linkedin.com/in/your-profile-link)
+📌 [Here's my LinkedIn post about Task-02](https://www.linkedin.com/posts/heysudhu_prodigyinfotech-webdevelopment-javascript-activity-7349090885625663489-LuKi?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEirZdMBJUebQ6tFmKWmnr6M8xhsbLlCxp0)
 
 ---
 
