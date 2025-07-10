@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stopwatch Web Application</title>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #3a1c71, #d76d77 80%);
+            color: #fff;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            animation: fadeInBody 1.2s;
+        }
+        @keyframes fadeInBody {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff61a6, #845ec2, #fff, #ff61a6);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 4s linear infinite;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .stopwatch {
+            position: relative;
+            background: rgba(30, 30, 60, 0.35);
+            padding: 2.5rem 3.5rem;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: popIn 1s cubic-bezier(.68,-0.55,.27,1.55), shadowPulse 2.5s infinite alternate;
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255,255,255,0.18);
+            overflow: hidden;
+        }
+        /* Animated shadow pulse for the stopwatch card */
+        @keyframes shadowPulse {
+            from {
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), 0 0 0 0 #1597bb55;
+            }
+            to {
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), 0 0 32px 8px #1597bb55;
+            }
+        }
+        .stopwatch::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            z-index: 0;
+            border-radius: 28px;
+            background: linear-gradient(120deg, #ff61a6, #845ec2, #fff, #ff61a6);
+            background-size: 300% 300%;
+            animation: borderAnim 6s ease-in-out infinite;
+            filter: blur(8px);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        @keyframes borderAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .stopwatch > * {
+            position: relative;
+            z-index: 1;
+        }
+        .stopwatch::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 30%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.04) 100%);
+            border-radius: 24px 24px 0 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .time {
+            font-size: 3.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px #1597bb, 0 0 40px #2b1055;
+            animation: glow 2s infinite alternate;
+            display: flex;
+            gap: 0.2em;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #1597bb, 0 0 20px #2b1055; }
+            to { text-shadow: 0 0 30px #fff, 0 0 60px #1597bb; }
+        }
+        .digit {
+            display: inline-block;
+            transition: transform 0.2s;
+            min-width: 1ch;
+        }
+        .digit.flip {
+            animation: flip 0.3s;
+        }
+        @keyframes flip {
+            0% { transform: rotateX(0deg);}
+            50% { transform: rotateX(90deg);}
+            100% { transform: rotateX(0deg);}
+        }
+        .digit.pop {
+            animation: popDigit 0.25s;
+        }
+        @keyframes popDigit {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #43cea2; }
+            100% { transform: scale(1); color: inherit; }
+        }
+        .buttons {
+            margin-bottom: 0.5rem;
+        }
+        .buttons button {
+            background: linear-gradient(90deg, #ff61a6 40%, #845ec2 100%);
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1.7rem;
+            margin: 0 0.5rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.13s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(21,151,187,0.18);
+            overflow: hidden;
+            position: relative;
+            background-size: 200% 200%;
+            animation: btnGradient 3s linear infinite;
+        }
+        @keyframes btnGradient {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .buttons button:active {
+            transform: scale(0.96);
+            background: #845ec2;
+        }
+        .buttons button:hover {
+            background: #845ec2;
+            transform: scale(1.06);
+            box-shadow: 0 4px 16px rgba(21,151,187,0.28);
+        }
+        .buttons button i {
+            margin-right: 0.5em;
+            transition: color 0.2s, filter 0.2s;
+            filter: drop-shadow(0 1px 2px #1597bb88);
+        }
+        .buttons button:hover i {
+            color: #43cea2;
+            filter: drop-shadow(0 2px 6px #43cea2cc);
+        }
+        .laps {
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 320px;
+        }
+        .laps ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .laps li {
+            background: rgba(255,255,255,0.13);
+            margin: 0.3rem 0;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateX(40px);
+            animation: fadeInLap 0.5s forwards;
+            border-left: 4px solid #ff61a6;
+            box-shadow: 0 2px 8px rgba(21,151,187,0.08);
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.7em;
+        }
+        @keyframes fadeInLap {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .laps li:not(:last-child) {
+            border-bottom: 1px solid rgba(67,206,162,0.13);
+        }
+        .laps li.highlight {
+            animation: highlightLap 1s;
+        }
+        @keyframes highlightLap {
+            0% { background: #fffbe6; color: #1597bb; }
+            100% { background: rgba(255,255,255,0.13); color: #fff; }
+        }
+        .laps li .lap-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #ff61a6, #845ec2);
+            color: #fff;
+            border-radius: 50px;
+            font-size: 0.95em;
+            font-weight: bold;
+            padding: 0.2em 0.8em;
+            margin-right: 0.7em;
+            margin-left: -0.3em;
+            animation: badgeIn 0.5s;
+            box-shadow: 0 2px 8px #1597bb44;
+        }
+        @keyframes badgeIn {
+            0% { transform: translateY(-20px) scale(0.7); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .author {
+            font-size: 1rem;
+            color: #b0c4d8;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+        footer {
+            margin-top: 2.5rem;
+            color: #b0c4d8;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        /* Light mode styles */
+        body.light-mode {
+            background: linear-gradient(120deg, #fff, #f8e8ff 80%);
+            color: #222;
+        }
+        body.light-mode .stopwatch {
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+        }
+        body.light-mode h1 {
+            background: linear-gradient(90deg, #ff61a6, #845ec2, #3a1c71, #ff61a6);
+            -webkit-text-fill-color: initial;
+            color: #845ec2;
+        }
+        body.light-mode .buttons button {
+            background: linear-gradient(90deg, #ff61a6 40%, #845ec2 100%);
+            color: #fff;
+        }
+        body.light-mode .buttons button:hover {
+            background: #feb47b;
+        }
+        body.light-mode .laps li {
+            background: rgba(132,94,194,0.08);
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stopwatch Web Application</h1>
+        <div class="author">By: <b>Sudhanshu Yadav</b></div>
+        <div class="stopwatch">
+            <div class="time" id="display">
+                <span class="digit">0</span><span class="digit">0</span>:
+                <span class="digit">0</span><span class="digit">0</span>:
+                <span class="digit">0</span><span class="digit">0</span>.
+                <span class="digit">0</span><span class="digit">0</span>
+            </div>
+            <div class="buttons">
+                <button onclick="startStopwatch()"><i class="fa-solid fa-play"></i> Start</button>
+                <button onclick="pauseStopwatch()"><i class="fa-solid fa-pause"></i> Pause</button>
+                <button onclick="resetStopwatch()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                <button onclick="lapStopwatch()"><i class="fa-solid fa-flag"></i> Lap</button>
+            </div>
+            <div class="laps">
+                <ul id="laps"></ul>
+            </div>
+        </div>
+        <button id="toggleMode" style="margin-bottom:1.5rem; border-radius:8px; border:none; padding:0.5em 1.2em; background:#fff2; color:#fff; cursor:pointer;">
+            <i class="fa-solid fa-moon"></i> Toggle Mode
+        </button>
+        <footer>&copy; 2025 Sudhanshu Yadav</footer>
+    </div>
+    <audio id="lapSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae2c2.mp3"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let running = false;
+        let lastDigits = Array.from({length: 10}, () => '0');
+
+        function formatTimeParts(time) {
+            const ms = Math.floor((time % 1000) / 10).toString().padStart(2, '0');
+            const s = Math.floor((time / 1000) % 60).toString().padStart(2, '0');
+            const m = Math.floor((time / (1000 * 60)) % 60).toString().padStart(2, '0');
+            const h = Math.floor((time / (1000 * 60 * 60))).toString().padStart(2, '0');
+            return (h + m + s + ms).split('');
+        }
+
+        function updateDisplay() {
+            const time = elapsedTime + (running ? Date.now() - startTime : 0);
+            const digits = formatTimeParts(time);
+            const display = document.getElementById('display');
+            const digitSpans = display.querySelectorAll('.digit');
+            for (let i = 0; i < digitSpans.length; i++) {
+                if (digitSpans[i].textContent !== digits[i]) {
+                    digitSpans[i].textContent = digits[i];
+                    digitSpans[i].classList.remove('flip', 'pop');
+                    void digitSpans[i].offsetWidth; // trigger reflow
+                    digitSpans[i].classList.add('flip', 'pop');
+                }
+            }
+        }
+
+        function startStopwatch() {
+            if (!running) {
+                running = true;
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+            }
+        }
+
+        function pauseStopwatch() {
+            if (running) {
+                running = false;
+                elapsedTime = Date.now() - startTime;
+                clearInterval(timerInterval);
+            }
+        }
+
+        function resetStopwatch() {
+            running = false;
+            clearInterval(timerInterval);
+            startTime = 0;
+            elapsedTime = 0;
+            updateDisplay();
+            document.getElementById('laps').innerHTML = '';
+
+            if (window.confetti) confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+        }
+
+        // Button ripple effect
+        document.querySelectorAll('.buttons button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = btn.getBoundingClientRect();
+                ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+                ripple.style.left = (e.clientX - rect.left - rect.width/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - rect.height/2) + 'px';
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 500);
+            });
+        });
+
+        // Highlight new lap
+        function lapStopwatch() {
+            if (running) {
+                const display = document.getElementById('display');
+                const lapTime = Array.from(display.querySelectorAll('.digit')).map(d => d.textContent).join('');
+                const formattedLap = `${lapTime.slice(0,2)}:${lapTime.slice(2,4)}:${lapTime.slice(4,6)}.${lapTime.slice(6,8)}`;
+                const li = document.createElement('li');
+                const badge = document.createElement('span');
+                badge.className = 'lap-badge';
+                badge.textContent = `Lap ${document.getElementById('laps').children.length + 1}`;
+                li.appendChild(badge);
+                li.appendChild(document.createTextNode(formattedLap));
+                li.classList.add('highlight');
+                document.getElementById('laps').appendChild(li);
+                setTimeout(() => li.classList.remove('highlight'), 1000);
+
+                // Play lap sound
+                document.getElementById('lapSound').play();
+            }
+        }
+
+        // Dark/Light mode toggle
+        document.getElementById('toggleMode').onclick = function() {
+            document.body.classList.toggle('light-mode');
+        };
+
+        updateDisplay();
+    </script>
+</body>
+</html>
